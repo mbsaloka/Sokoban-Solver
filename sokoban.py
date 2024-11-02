@@ -12,7 +12,7 @@ class Sokoban:
     def find_player(self):
         for row in range(len(self.board)):
             for col in range(len(self.board[row])):
-                if self.board[row][col] == 'P':
+                if self.board[row][col] == '@':
                     return row, col
         return None
 
@@ -20,7 +20,7 @@ class Sokoban:
         boxes = []
         for row in range(len(self.board)):
             for col in range(len(self.board[row])):
-                if self.board[row][col] == 'B':
+                if self.board[row][col] == '$':
                     boxes.append((row, col))
         return boxes
 
@@ -28,7 +28,7 @@ class Sokoban:
         targets = []
         for row in range(len(self.board)):
             for col in range(len(self.board[row])):
-                if self.board[row][col] == 'T':
+                if self.board[row][col] == '.':
                     targets.append((row, col))
         return targets
 
@@ -83,6 +83,7 @@ class Sokoban:
                 if distance < min_distance:
                     min_distance = distance
             total_distance += min_distance
+        # print(f"Heuristic for state with player at {state.player_pos} and boxes at {state.boxes}: {total_distance}")
         return total_distance
 
     def possible_actions(self, current_state):
@@ -94,15 +95,15 @@ class Sokoban:
 
         for row in range(len(board_copy)):
             for col in range(len(board_copy[row])):
-                if board_copy[row][col] == 'P':
+                if board_copy[row][col] == '@':
                     board_copy[row][col] = ' '
-                if board_copy[row][col] == 'B':
+                if board_copy[row][col] == '$':
                     board_copy[row][col] = ' '
 
-        board_copy[self.player_pos[0]][self.player_pos[1]] = 'P'
+        board_copy[self.player_pos[0]][self.player_pos[1]] = '@'
 
         for box in self.boxes:
-            board_copy[box[0]][box[1]] = 'B'
+            board_copy[box[0]][box[1]] = '$'
 
         for row in board_copy:
             print("".join(row))
@@ -171,12 +172,19 @@ class Sokoban:
 
 if __name__ == "__main__":
     board = [
-        "#####",
-        "#P  #",
-        "# B #",
-        "#  T#",
-        "#####"
+        # "#####",
+        # "#@  #",
+        # "# $ #",
+        # "#  .#",
+        # "#####"
+        "########",
+        "#      #",
+        "# $@$. #",
+        "#  $.  #",
+        "# .$.  #",
+        "#      #",
+        "########"
     ]
     game = Sokoban(board)
-    # game.a_star()
-    game.gbfs()
+    game.a_star()
+    # game.gbfs()
