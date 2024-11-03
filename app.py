@@ -83,8 +83,17 @@ def solve_gbfs():
     solution, all_states = solve_sokoban(board, "greedy")
     end_time = time.time()
     time_elapsed = round((end_time - start_time) * 100, 2)
-    print(time_elapsed)
-    return jsonify({'solution': solution, 'all_states': all_states, 'time': time_elapsed})
+    string_path = ""
+    for move in solution:
+        if move == (-1, 0):
+            string_path += "U"
+        elif move == (1, 0):
+            string_path += "D"
+        elif move == (0, -1):
+            string_path += "L"
+        elif move == (0, 1):
+            string_path += "R"
+    return jsonify({'solution': solution, 'all_states': all_states, 'time': time_elapsed, 'string_path': string_path})
 
 @app.route('/solve-astar', methods=['POST'])
 def solve_astar():
@@ -94,8 +103,17 @@ def solve_astar():
     solution, all_states = solve_sokoban(board, "astar")
     end_time = time.time()
     time_elapsed = round((end_time - start_time) * 100, 2)
-    print(time_elapsed)
-    return jsonify({'solution': solution, 'all_states': all_states, 'time': time_elapsed})
+    string_path = ""
+    for move in solution:
+        if move == (-1, 0):
+            string_path += "U"
+        elif move == (1, 0):
+            string_path += "D"
+        elif move == (0, -1):
+            string_path += "L"
+        elif move == (0, 1):
+            string_path += "R"
+    return jsonify({'solution': solution, 'all_states': all_states, 'time': time_elapsed, 'string_path': string_path})
 
 if __name__ == '__main__':
     app.run(debug=True)

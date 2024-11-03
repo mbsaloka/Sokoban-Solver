@@ -27,6 +27,7 @@ export default function Sokoban({ algorithm }) {
   const [moves, setMoves] = useState(0);
   const [solution, setSolution] = useState([]);
   const [solutionIndex, setSolutionIndex] = useState(0);
+  const [stringPath, setStringPath] = useState("");
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [allStates, setAllStates] = useState([]);
   const [stateIndex, setStateIndex] = useState(0);
@@ -137,6 +138,8 @@ export default function Sokoban({ algorithm }) {
     setIsSolving(false);
     setIsAutoPlaying(false);
     setIsSolved(false);
+    setStringPath("");
+
   };
 
   const solvePuzzle = async () => {
@@ -156,6 +159,8 @@ export default function Sokoban({ algorithm }) {
         setAllStates(data.all_states);
         setSolutionIndex(0);
         setStateIndex(0);
+        setStringPath(data.string_path);
+
       } else {
         const response = await fetch('http://localhost:5000/solve-astar', {
           method: 'POST',
@@ -170,6 +175,7 @@ export default function Sokoban({ algorithm }) {
         setAllStates(data.all_states);
         setSolutionIndex(0);
         setStateIndex(0);
+        setStringPath(data.string_path);
       }
       setIsSolving(false);
     } catch (error) {
@@ -281,6 +287,9 @@ export default function Sokoban({ algorithm }) {
       </div>
       <div className="mt-4 space-x-2">
         All States: {allStates.length}
+      </div>
+      <div className="mt-4 space-x-2">
+        Result: {stringPath} ({solution.length} moves)
       </div>
     </div>
   );
