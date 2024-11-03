@@ -127,7 +127,16 @@ export default function Sokoban({ algorithm }) {
   };
 
   const resetLevel = () => {
-    loadLevel(currentLevel);
+    const level = levels[currentLevel];
+    setBoard(level.map(row => row.split('')));
+    setPlayerPos(findPlayer(level));
+    setMoves(0);
+    setSolutionIndex(0);
+    setTimeElapsed(0);
+    setStateIndex(0);
+    setIsSolving(false);
+    setIsAutoPlaying(false);
+    setIsSolved(false);
   };
 
   const solvePuzzle = async () => {
@@ -193,7 +202,7 @@ export default function Sokoban({ algorithm }) {
   useEffect(() => {
     let intervalId
     if (isAutoPlaying) {
-      intervalId = setInterval(autoPlay, 50)
+      intervalId = setInterval(autoPlay, 100)
     }
     return () => {
       if (intervalId) clearInterval(intervalId)
@@ -251,7 +260,7 @@ export default function Sokoban({ algorithm }) {
         <Button onClick={prevSearchState} disabled={stateIndex <= 0}>
           Prev State
         </Button>
-        <Button onClick={nextSearchState} disabled={stateIndex > stateIndex.length}>
+        <Button onClick={nextSearchState} disabled={stateIndex >= allStates.length}>
           Next State
         </Button>
       </div>
