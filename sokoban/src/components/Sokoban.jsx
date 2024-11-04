@@ -123,6 +123,12 @@ export default function Sokoban({ algorithm }) {
     }
   };
 
+  const prevLevel = () => {
+    if (currentLevel > 0) {
+      setCurrentLevel(currentLevel - 1);
+    }
+  };
+
   const checkWin = (board) => {
     return board.every(row => !row.includes(BOX));
   };
@@ -258,7 +264,8 @@ export default function Sokoban({ algorithm }) {
       <div className="mt-4 space-x-2">
         <Button onClick={resetLevel}>Reset Level</Button>
         <Button onClick={solvePuzzle} disabled={isSolving}>{isSolving ? "Loading..." : "Solve Puzzle"}</Button>
-        <Button onClick={nextLevel} disabled={!isSolved}>Next Level</Button>
+        <Button onClick={prevLevel} disabled={currentLevel<=0}>Prev Level</Button>
+        <Button onClick={nextLevel} disabled={currentLevel+1>=levels.length}>Next Level</Button>
       </div>
       <h2 className='mt-8 font-bold'>Simulate Search</h2>
       <div className="mt-4 space-x-2">
