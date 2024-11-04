@@ -13,12 +13,12 @@ const FLOOR = ' ';
 
 const levels = levelsData.levels;
 
-const directions = {
-  ArrowUp: [-1, 0],
-  ArrowDown: [1, 0],
-  ArrowLeft: [0, -1],
-  ArrowRight: [0, 1]
-};
+// const directions = {
+//   ArrowUp: [-1, 0],
+//   ArrowDown: [1, 0],
+//   ArrowLeft: [0, -1],
+//   ArrowRight: [0, 1]
+// };
 
 export default function Sokoban({ algorithm }) {
   const [currentLevel, setCurrentLevel] = useState(0);
@@ -59,6 +59,7 @@ export default function Sokoban({ algorithm }) {
     setIsSolving(false);
     setIsAutoPlaying(false);
     setIsSolved(false);
+    setStringPath("");
   };
 
   const findPlayer = (level) => {
@@ -139,13 +140,10 @@ export default function Sokoban({ algorithm }) {
     setPlayerPos(findPlayer(level));
     setMoves(0);
     setSolutionIndex(0);
-    setTimeElapsed(0);
     setStateIndex(0);
     setIsSolving(false);
     setIsAutoPlaying(false);
     setIsSolved(false);
-    setStringPath("");
-
   };
 
   const solvePuzzle = async () => {
@@ -160,6 +158,9 @@ export default function Sokoban({ algorithm }) {
           body: JSON.stringify({ board, algorithm }),
         });
         const data = await response.json();
+        if(data.error === "Solving process timed out") {
+          return;
+        }
         setSolution(data.solution);
         setTimeElapsed(data.time);
         setAllStates(data.all_states);
@@ -176,6 +177,9 @@ export default function Sokoban({ algorithm }) {
           body: JSON.stringify({ board, algorithm }),
         });
         const data = await response.json();
+        if(data.error === "Solving process timed out") {
+          return;
+        }
         setSolution(data.solution);
         setTimeElapsed(data.time);
         setAllStates(data.all_states);

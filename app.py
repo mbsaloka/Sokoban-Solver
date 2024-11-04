@@ -3,11 +3,11 @@ from flask_cors import CORS
 from scipy.optimize import linear_sum_assignment
 import heapq
 import time
+import concurrent.futures
 
 app = Flask(__name__)
 CORS(app)
 
-# Sokoban elements
 WALL = '#'
 PLAYER = '@'
 BOX = '$'
@@ -16,7 +16,6 @@ PLAYER_ON_GOAL = '+'
 BOX_ON_GOAL = '*'
 FLOOR = ' '
 
-# Directions
 DIRECTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
 def is_goal(state):
@@ -37,12 +36,7 @@ def heuristic(state):
         row = [abs(b[0] - g[0]) + abs(b[1] - g[1]) for g in goals]
         cost_matrix.append(row)
 
-    # print(cost_matrix)
-
     row_indices, col_indices = linear_sum_assignment(cost_matrix)
-
-    # print(row_indices, col_indices)
-
     total_distance = sum(cost_matrix[row][col] for row, col in zip(row_indices, col_indices))
 
     return total_distance
@@ -90,14 +84,28 @@ def solve_sokoban(initial_state, algorithm='greedy'):
 
     return None
 
+def solve_with_timeout(board, algorithm):
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future = executor.submit(solve_sokoban, board, algorithm)
+        try:
+            return future.result(timeout=5)
+        except concurrent.futures.TimeoutError:
+            return None
+
 @app.route('/solve-gbfs', methods=['POST'])
 def solve_gbfs():
     data = request.json
     board = data['board']
     start_time = time.time()
-    solution, all_states = solve_sokoban(board, "greedy")
+    # solution, all_states = solve_sokoban(board, "greedy")
+    result = solve_with_timeout(board, "greedy")
     end_time = time.time()
     time_elapsed = round((end_time - start_time) * 100, 2)
+
+    if result is None:
+        return jsonify({'error': 'Solving process timed out', 'time': time_elapsed}), 504
+
+    solution, all_states = result
     string_path = ""
     for move in solution:
         if move == (-1, 0):
@@ -115,9 +123,15 @@ def solve_astar():
     data = request.json
     board = data['board']
     start_time = time.time()
-    solution, all_states = solve_sokoban(board, "astar")
+    # solution, all_states = solve_sokoban(board, "astar")
+    result = solve_with_timeout(board, "astar")
     end_time = time.time()
     time_elapsed = round((end_time - start_time) * 100, 2)
+
+    if result is None:
+        return jsonify({'error': 'Solving process timed out', 'time': time_elapsed}), 504
+
+    solution, all_states = result
     string_path = ""
     for move in solution:
         if move == (-1, 0):
