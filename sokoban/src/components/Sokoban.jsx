@@ -253,7 +253,7 @@ export default function Sokoban({ algorithm }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <h1 className="text-4xl font-bold mb-4">Sokoban ({algorithm == "greedy" ? "Greedy" : "A*"})</h1>
-      <div className="mb-4">Level: {currentLevel + 1} | Moves: {moves}</div>
+      <div className="mb-4">Level: {currentLevel + 1} | Moves: {solutionIndex}</div>
       <GameBoard board={board} />
       <div className="mt-4 space-x-2">
         <Button onClick={resetLevel}>Reset Level</Button>
@@ -288,8 +288,8 @@ export default function Sokoban({ algorithm }) {
       <div className="mt-4 space-x-2">
         All States: {allStates.length}
       </div>
-      <div className="mt-4 space-x-2">
-        Result: {stringPath} ({solution.length} moves)
+      <div className="mt-4 space-x-2 break-words whitespace-normal max-w-80">
+          Result: {stringPath} ({solution.length} moves)
       </div>
     </div>
   );
