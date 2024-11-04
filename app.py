@@ -36,6 +36,7 @@ def heuristic(state):
         row = [abs(b[0] - g[0]) + abs(b[1] - g[1]) for g in goals]
         cost_matrix.append(row)
 
+    # Hungarian algorithm
     row_indices, col_indices = linear_sum_assignment(cost_matrix)
     total_distance = sum(cost_matrix[row][col] for row, col in zip(row_indices, col_indices))
 
@@ -88,7 +89,7 @@ def solve_with_timeout(board, algorithm):
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future = executor.submit(solve_sokoban, board, algorithm)
         try:
-            return future.result(timeout=5)
+            return future.result(timeout=2)
         except concurrent.futures.TimeoutError:
             return None
 

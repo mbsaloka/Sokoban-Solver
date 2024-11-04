@@ -159,6 +159,7 @@ export default function Sokoban({ algorithm }) {
         });
         const data = await response.json();
         if(data.error === "Solving process timed out") {
+          alert("Solving process timed out (Greedy)");
           return;
         }
         setSolution(data.solution);
@@ -178,6 +179,7 @@ export default function Sokoban({ algorithm }) {
         });
         const data = await response.json();
         if(data.error === "Solving process timed out") {
+          alert("Solving process timed out (A*)");
           return;
         }
         setSolution(data.solution);
