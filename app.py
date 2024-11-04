@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from scipy.optimize import linear_sum_assignment
 import heapq
 import time
 
@@ -30,7 +31,21 @@ def heuristic(state):
                 boxes.append((i, j))
             if cell in [GOAL, PLAYER_ON_GOAL, BOX_ON_GOAL]:
                 goals.append((i, j))
-    return sum(min(abs(b[0]-g[0]) + abs(b[1]-g[1]) for g in goals) for b in boxes)
+
+    cost_matrix = []
+    for b in boxes:
+        row = [abs(b[0] - g[0]) + abs(b[1] - g[1]) for g in goals]
+        cost_matrix.append(row)
+
+    # print(cost_matrix)
+
+    row_indices, col_indices = linear_sum_assignment(cost_matrix)
+
+    # print(row_indices, col_indices)
+
+    total_distance = sum(cost_matrix[row][col] for row, col in zip(row_indices, col_indices))
+
+    return total_distance
 
 def get_neighbors(state):
     player_pos = next((i, j) for i, row in enumerate(state) for j, cell in enumerate(row) if cell in [PLAYER, PLAYER_ON_GOAL])
@@ -70,7 +85,7 @@ def solve_sokoban(initial_state, algorithm='greedy'):
 
         for neighbor, move in get_neighbors(state):
             if neighbor not in visited:
-                priority = len(path) if algorithm == 'greedy' else len(path) + heuristic(neighbor)
+                priority = heuristic(neighbor) if algorithm == 'greedy' else len(path) + heuristic(neighbor)
                 heapq.heappush(frontier, (priority, neighbor, path + [move]))
 
     return None
